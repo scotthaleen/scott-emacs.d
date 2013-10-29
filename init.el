@@ -8,6 +8,14 @@
 
 (prefer-coding-system 'utf-8)
 
+;; Disable startup message 
+(setq inhibit-startup-message t)
+
+(global-set-key (kbd "C-x C-m") 'shell)
+
+;; Jump to a definition in the current file. 
+(global-set-key (kbd "C-x C-i") 'imenu)
+
 (add-to-list 'load-path "~/.emacs.d/vendor/better-defaults")
 (require 'better-defaults)
 
@@ -25,17 +33,18 @@
 
 ;;(setq make-backup-files nil auto-save-default nil)
 
-(setq frame-title-format '(buffer-file-name "%f" ("%b")))
-(set-keyboard-coding-system nil)
-(tooltip-mode -1)
-(mouse-wheel-mode t)
-(blink-cursor-mode -1)
+(when window-system
+  (setq frame-title-format '(buffer-file-name "%f" ("%b")))
+  (tooltip-mode -1)
+  (mouse-wheel-mode t)
+  (blink-cursor-mode -1))
 
 (add-to-list 'safe-local-variable-values '(lexical-binding .t))
 (add-to-list 'safe-local-variable-values '(whitespace-line-column . 80))
 
 (add-to-list 'load-path "~/.emacs.d/vendor/ido-ubiquitous")
 (require 'ido-ubiquitous)
+
 
 (ido-ubiquitous-mode)
 (setq ido-enable-prefix nil
@@ -71,9 +80,6 @@
 
 (add-to-list 'load-path "~/.emacs.d/vendor/clojure-mode")
 (add-to-list 'load-path "~/.emacs.d/vendor/nrepl")
-;;(add-to-list 'load-path "~/.emacs.d/clojure-mode-2.0.0")
-;;(add-to-list 'load-path "~/.emacs.d/scala-mode2")
-;;(add-to-list 'load-path "~/.emacs.d/ensime_2.10.0-0.9.8.9/elisp")
 
 (require 'clojure-mode)
 
