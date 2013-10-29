@@ -51,6 +51,7 @@
 
 (ido-ubiquitous-mode)
 (setq ido-enable-prefix nil
+      ido-save-directory-list-file "~/.emacs.d/.ido.last"
       ido-enable-flex-matching t
       ido-auto-merge-work-directories-length nil
       ido-create-new-buffer 'always
@@ -58,6 +59,16 @@
       ido-use-virtual-buffers t
       ido-handle-duplicate-virtual-buffers 2
       ido-max-prospects 10)
+
+(defun recentf-ido-find-file ()
+  "Find a recent file using ido.
+   From Phil Hagelberg's emacs-starter-kit."
+  (interactive)
+  (let ((file (ido-completing-read "Choose recent file: " recentf-list nil t)))
+    (when file
+      (find-file file))))
+
+(global-set-key (kbd "C-x f") 'recentf-ido-find-file)
 
 
 (set-default 'indent-tabs-mode nil)
