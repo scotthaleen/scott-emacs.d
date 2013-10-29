@@ -50,8 +50,8 @@
 
 
 (ido-ubiquitous-mode)
-(setq ido-enable-prefix nil
-      ido-save-directory-list-file "~/.emacs.d/.ido.last"
+(setq ido-save-directory-list-file "~/.emacs.d/.ido.last"
+      ido-enable-prefix nil
       ido-enable-flex-matching t
       ido-auto-merge-work-directories-length nil
       ido-create-new-buffer 'always
