@@ -13,6 +13,9 @@
 
 (global-set-key (kbd "C-x C-m") 'shell)
 
+;; Window switching. (C-x o goes to the next window)
+(windmove-default-keybindings) ;; Shift+direction
+
 ;; Jump to a definition in the current file. 
 (global-set-key (kbd "C-x C-i") 'imenu)
 
