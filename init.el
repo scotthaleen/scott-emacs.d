@@ -34,6 +34,9 @@
 (add-to-list 'load-path "~/.emacs.d/vendor/paredit")
 (require 'paredit)
 
+(add-to-list 'load-path "~/.emacs.d/vendor/markdown-mode-2.0")
+(require 'markdown-mode)
+
 ;;(setq make-backup-files nil auto-save-default nil)
 
 (when window-system
