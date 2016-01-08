@@ -5,3 +5,5 @@ checkout yasnippets [snippets](https://github.com/AndreaCrotti/yasnippet-snippet
 to `~/.emacs.d/yasnippet-snippets`
 
 
+Started from Alan's [emacs.d](https://github.com/alandipert/alan-emacs.d)
+
