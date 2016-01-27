@@ -30,6 +30,9 @@
     org
     find-file-in-project
     paredit
+    company
+    tide
+    web-mode
     yaml-mode
     json-mode
     yasnippet
@@ -223,6 +226,40 @@
           '(lambda ()
              (dolist (el html5-elements)
                (put-clojure-indent el 'defun))))
+
+
+;;typescript mode
+(add-hook 'typescript-mode-hook
+          (lambda ()
+            (tide-setup)
+            (flycheck-mode +1)
+            (setq flycheck-check-syntax-automatically '(save mode-enabled))
+            (eldoc-mode +1)
+            ;; company is an optional dependency. You have to
+            ;; install it separately via package-install
+            ;;(company-mode-on)
+            ))
+
+(setq company-tooltip-align-annotations t)
+
+
+
+
+
+;; Tide can be used along with web-mode to edit tsx files
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+              (tide-setup)
+              (flycheck-mode +1)
+              (setq flycheck-check-syntax-automatically '(save mode-enabled))
+              (eldoc-mode +1)
+              (company-mode-on))))
+
+
+
 ;;
 ;; change font size
 ;;
@@ -323,6 +360,7 @@
     lisp-interaction
     ielm
     js
+    typescript
     repl))
 
 (dolist (mode paredit-modes)
@@ -381,3 +419,31 @@
                                                  )
                                  nil)))))))
 
+;;; typescript add {} to paredit and λ for pretty functions
+(eval-after-load 'typescript-mode
+  '(progn
+     (define-key typescript-mode-map "{" 'paredit-open-curly)
+     (define-key typescript-mode-map "}" 'paredit-close-curly-and-newline)
+     ;;(add-hook 'typescript-mode-hook (lambda () (lll local-unset-key (kbd "{"))))     
+     (add-hook 'typescript-mode-hook 'paredit-nonlisp)
+     (setq typescript-indent-level 2)
+     ;; fixes problem with pretty function font-lock
+     (define-key typescript-mode-map (kbd ",") 'self-insert-command)
+     (font-lock-add-keywords
+      'typescript-mode `(("\\(function *\\)("
+                          (0 (progn (compose-region (match-beginning 1)
+                                                    (match-end 1)
+                                                    ,(make-char 'greek-iso8859-7 107)
+                                                    ;;"\u0192"
+                                                    )
+                                    nil)))))
+     ;; (font-lock-add-keywords
+     ;;  'typescript-mode `(("\\((\\)\\(.*\\)\\()\\) *=>"
+     ;;                      (0 (progn (compose-region (match-beginning 1)
+     ;;                                                (match-end 1)
+     ;;                                                ,(make-char 'greek-iso8859-7 107)
+     ;;                                                ;;"\u0192"
+     ;;                                                )
+     ;;                                nil))
+     ;;                      )))
+     ))
