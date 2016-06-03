@@ -5,9 +5,9 @@
 (require 'package)
 
 (dolist (repo '(("marmalade" . "http://marmalade-repo.org/packages/")
-		("melpa" . "https://melpa.org/packages/")
+                ("melpa" . "https://melpa.org/packages/")
                 ;;("melpa" . "http://melpa.milkbox.net/packages/")
-		))
+                ))
   (add-to-list 'package-archives repo))
 (package-initialize)
 
@@ -27,14 +27,18 @@
     magit
     markdown-mode
     cider
+    which-key
     org
     find-file-in-project
     paredit
     company
     tide
+    feature-mode
     web-mode
+    minimap
     yaml-mode
     json-mode
+    nodejs-repl
     yasnippet
     el-get
     highlight-symbol
@@ -47,6 +51,9 @@
 ;;yasnippet snippets
 (setq yas-snippet-dirs
       '("~/.emacs.d/yasnippet-snippets/"))
+
+(require 'which-key)
+(which-key-mode)
 
 ;;
 ;; visual settings
@@ -98,7 +105,7 @@
 (auto-compression-mode t)
 (recentf-mode 1)
 (setq diff-switches "-u -w")
-(menu-bar-mode 0)
+;;(menu-bar-mode 0)
 
 ;;
 ;; custom.el
@@ -189,7 +196,7 @@
       (global-set-key (kbd "M-m") 'toggle-fullscreen)
       (if (boundp 'tool-bar-mode) (tool-bar-mode -1))
       (set-fringe-style -1)
-      (tooltip-mode -1)
+      ;;(tooltip-mode -1)
       (scroll-bar-mode -1)
       (modify-frame-parameters (selected-frame)
                                (list (cons 'cursor-type 'hollow)))
@@ -284,6 +291,11 @@
 (global-set-key (kbd "C--") 'decrease-font-size)
 (global-set-key (kbd "M-j") 'join-line)
 (global-set-key (kbd "RET") 'newline-and-indent)
+
+(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<down>") 'shrink-window)
+(global-set-key (kbd "S-C-<up>") 'enlarge-window)
 
 ;; Behave like */# in Vim, jumping to symbols under point.
 (global-set-key (kbd "C-x *") 'highlight-symbol-next)
@@ -447,3 +459,4 @@
      ;;                                nil))
      ;;                      )))
      ))
+
