@@ -5,17 +5,18 @@
 OSX open *Keyboard* settings change *Key Repeat* to the far right *Fast* tick and *Delay Until Repeat* one tick left of *Short* 
 
 
-*Control* = *C* the *Command* key 
+*Control* = *C* the *Command* key <br />
 *Option* = *M* the *Meta* key 
 
 
 # Quick Reference
 
-*-* means both keys at the same time 
-*\space* means next key(s) 
+*-* means both keys at the same time  <br />
+*&lt;space&gt;* means next key(s) 
 
 Example: *C-x* *C-s*  would be holding *control* & *x* then *control* & *s* 
 
+| Keys | Command |
 |:----------|:-----------:|
 | *C-x* *c*  | Exit emacs | 
 | *C-x* *C-f* | Open A file |
