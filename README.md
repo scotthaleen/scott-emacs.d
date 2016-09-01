@@ -47,4 +47,6 @@ $ emacs
 ```
 
 
+[A Quick Emacs key Reference](EMACS-QUICK-REFERENCE.md)
+
 
