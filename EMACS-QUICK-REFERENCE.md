@@ -31,9 +31,9 @@ Example: *C-x* *C-s*  would be holding *control* & *x* then *control* & *s*
 | *C-e*       | jump to end of line | 
 | *C-k*      | cut to end of line | 
 | *C-y*      | paste | 
-| *C-<space>* | toggle mark (highlight) on/off | 
+| *C-&lt;space&gt;* | toggle mark (highlight) on/off | 
 | *C-w*      | cut highlight region | 
-| *C-s* | Search <repeat *C-s* for next match *C-r* previous match> | 
+| *C-s* | Search &lt;repeat *C-s* for next match *C-r* previous match&gt; | 
 
 
 [More at ...](https://www.gnu.org/software/emacs/tour/)
