@@ -33,7 +33,6 @@
     find-file-in-project
     paredit
     company
-    tide
     feature-mode
     web-mode
     minimap
@@ -73,6 +72,7 @@
 (global-linum-mode 1)
 ;;(global-rainbow-delimiters-mode 1)
 (winner-mode 1)
+(nyan-mode 1)
 
 (setq mode-line
       '((t (:background "magenta" :foreground "black" :box (:line-width -1 :style released-button))))
@@ -107,6 +107,9 @@
 (auto-compression-mode t)
 (recentf-mode 1)
 (setq diff-switches "-u -w")
+
+(global-company-mode)
+
 ;;(menu-bar-mode 0)
 
 ;;
@@ -206,6 +209,7 @@
       (load-theme 'cyberpunk t)
       )
 
+
   (set-face-background 'default "nil"))
 
 (add-hook 'after-init-hook 
@@ -236,37 +240,8 @@
              (dolist (el html5-elements)
                (put-clojure-indent el 'defun))))
 
-
-;;typescript mode
-(add-hook 'typescript-mode-hook
-          (lambda ()
-            (tide-setup)
-            (flycheck-mode +1)
-            (setq flycheck-check-syntax-automatically '(save mode-enabled))
-            (eldoc-mode +1)
-            ;; company is an optional dependency. You have to
-            ;; install it separately via package-install
-            ;;(company-mode-on)
-            ))
-
 (setq company-tooltip-align-annotations t)
-
-
-
-
-
-;; Tide can be used along with web-mode to edit tsx files
 (require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-(add-hook 'web-mode-hook
-          (lambda ()
-            (when (string-equal "tsx" (file-name-extension buffer-file-name))
-              (tide-setup)
-              (flycheck-mode +1)
-              (setq flycheck-check-syntax-automatically '(save mode-enabled))
-              (eldoc-mode +1)
-              (company-mode-on))))
-
 
 
 ;;
