@@ -1,3 +1,4 @@
+
 ;;
 ;; package business
 ;;
@@ -41,6 +42,7 @@
     nodejs-repl
     yasnippet
     el-get
+    undo-tree
     highlight-symbol
     rainbow-delimiters))
 
@@ -411,6 +413,15 @@
   (set (make-local-variable 'paredit-space-for-delimiter-predicates)
        '((lambda (endp delimiter) nil)))
   (paredit-mode 1))
+
+;;react-native
+(add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
+(setq web-mode-markup-indent-offset 2
+      web-mode-css-indent-offset 2
+      web-mode-code-indent-offset 2)
+(setq js-indent-level 2)
+
+
 
 (add-hook 'java-mode-hook #'yas-minor-mode)
 
