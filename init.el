@@ -35,6 +35,7 @@
     company
     feature-mode
     web-mode
+    nyan-mode
     minimap
     yaml-mode
     json-mode
