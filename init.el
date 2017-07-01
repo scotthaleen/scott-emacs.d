@@ -34,6 +34,7 @@
     paredit
     company
     feature-mode
+    helm
     web-mode
     nyan-mode
     minimap
