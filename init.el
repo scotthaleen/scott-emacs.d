@@ -87,6 +87,9 @@
 ;; quirk fixes, behaviors
 ;;
 
+;;; cleanup whitespace on save 
+(add-hook 'before-save-hook 'whitespace-cleanup)
+
 ;;; compiz fix
 (add-to-list 'default-frame-alist '(alpha . 100))
 
