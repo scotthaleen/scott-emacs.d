@@ -44,6 +44,7 @@
     yasnippet
     el-get
     undo-tree
+    flycheck
     highlight-symbol
     rainbow-delimiters))
 
@@ -401,7 +402,12 @@
       web-mode-code-indent-offset 2)
 (setq js-indent-level 2)
 
-
+;; python
+;; flake8
+;; flymake-python-pyflakes
+;;(add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
+;;(setq flymake-python-pyflakes-executable "flake8")
+(add-hook 'python-mode-hook 'flycheck-mode)
 
 (add-hook 'java-mode-hook #'yas-minor-mode)
 
