@@ -25,16 +25,20 @@
     cyberpunk-theme
     dired-details
     find-file-in-project
+    projectile
     magit
     markdown-mode
     cider
     which-key
     org
-    find-file-in-project
+    ag
     paredit
     company
     feature-mode
     web-mode
+    all-the-icons
+    neotree
+    ensime
     nyan-mode
     minimap
     yaml-mode
@@ -44,7 +48,11 @@
     el-get
     undo-tree
     highlight-symbol
-    rainbow-delimiters))
+    rainbow-delimiters
+    fill-column-indicator
+    restclient
+    flycheck
+    ))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -54,8 +62,61 @@
 (setq yas-snippet-dirs
       '("~/.emacs.d/yasnippet-snippets/"))
 
+
+
+;;git gutter experimental
+(global-git-gutter+-mode)
+
+
+;; NOTE: install fonts `M-x all-the-icons-install-fonts`
+(require 'all-the-icons)
+(require 'neotree)
+
+(require 'doc-view)
+(print doc-view-pdfdraw-program)
+(setq doc-view-pdf->png-converter-invocation
+      'doc-view-pdf->png-converter-invocation-mupdf)
+
+;;use icons for window system and arrow terminal.
+(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+
+
 (require 'which-key)
 (which-key-mode)
+
+;; fill column indicator
+
+(require 'fill-column-indicator)
+(setq fci-rule-column 120)
+
+(defvar fci-whitespace-modes
+  '(markdown
+    emacs-lisp
+    python
+    org))
+
+(dolist (mode fci-whitespace-modes)
+  (add-hook (intern (concat (symbol-name mode) "-mode-hook")) #'fci-mode)
+  (add-hook (intern (concat (symbol-name mode) "-mode-hook")) #'whitespace-mode))
+
+
+(with-eval-after-load
+ 'org
+ (org-babel-do-load-languages
+  'org-babel-load-languages
+  '((awk . t)
+    (calc .t)
+    (dot . t)
+    (emacs-lisp . t)
+    ;;(gnuplot . t)
+    ;;(latex . t)
+    (js . t)
+    ;;(haskell . t)
+    ;;(http . t)
+    ;;(perl . t)
+    (python . t)
+    ;;(R . t)
+    (sh . t))))
 
 ;;
 ;; visual settings
@@ -64,7 +125,7 @@
 (setq inhibit-splash-screen t
       initial-scratch-message nil
       truncate-partial-width-windows nil
-      initial-major-mode 'clojure-mode
+      initial-major-mode 'org-mode
       linum-format "%d  "
       visual-bell t)
 
@@ -74,6 +135,7 @@
 ;;(global-rainbow-delimiters-mode 1)
 (winner-mode 1)
 (nyan-mode 1)
+
 
 (setq mode-line
       '((t (:background "magenta" :foreground "black" :box (:line-width -1 :style released-button))))
@@ -86,6 +148,11 @@
 ;; quirk fixes, behaviors
 ;;
 
+(add-hook 'before-save-hook 'whitespace-cleanup)
+
+;;(define-globalized-minor-mode global-whitespace-mode whitespace-mode (lambda () (whitespace-mode 1)))
+;;(global-whitespace-mode 1)
+
 ;;; compiz fix
 (add-to-list 'default-frame-alist '(alpha . 100))
 
@@ -94,13 +161,18 @@
       auto-save-default nil
       diff-switches "-u -w"
       whitespace-style '(trailing lines space-before-tab
-                         face indentation space-after-tab))
+                                  face indentation space-after-tab lines-tail))
+
+
+;;(set-face-attribute 'whitespace-line-column nil :background nil :foreground "gray30")
 
 (setq-default tab-width 2
               indent-tabs-mode nil
               c-basic-offset 2
               sh-basic-offset 2
-              js-indent-level 2)
+              js-indent-level 2
+              whitespace-line-column 120
+              fill-column 120)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (delete-selection-mode t)
@@ -140,8 +212,12 @@
     (when file
       (find-file file))))
 
+(global-set-key (kbd "C-x O") 'previous-multiframe-window)
 (global-set-key (kbd "C-x f") 'recentf-ido-find-file)
 (global-set-key (kbd "M-/") 'hippie-expand)
+(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "C-x p f") 'find-file-in-project)
+
 
 ;;; :set wrapscan emulation
 (defadvice isearch-search (after isearch-no-fail activate)
@@ -213,7 +289,7 @@
 
   (set-face-background 'default "nil"))
 
-(add-hook 'after-init-hook 
+(add-hook 'after-init-hook
       (lambda () (load-theme 'cyberpunk t)))
 
 ;;
@@ -373,6 +449,7 @@
 (dolist (mode rainbow-delimiter-modes)
   (add-hook (intern (concat (symbol-name mode) "-mode-hook")) #'rainbow-delimiters-mode))
 
+
 ;;; ibuffer
 
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -396,6 +473,15 @@
       web-mode-css-indent-offset 2
       web-mode-code-indent-offset 2)
 (setq js-indent-level 2)
+
+;; python
+;; flake8
+;; flymake-python-pyflakes
+;;(add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
+;;(setq flymake-python-pyflakes-executable "flake8")
+(add-hook 'python-mode-hook 'projectile-mode)
+(add-hook 'python-mode-hook 'flycheck-mode)
+
 
 
 
@@ -423,7 +509,7 @@
   '(progn
      (define-key typescript-mode-map "{" 'paredit-open-curly)
      (define-key typescript-mode-map "}" 'paredit-close-curly-and-newline)
-     ;;(add-hook 'typescript-mode-hook (lambda () (lll local-unset-key (kbd "{"))))     
+     ;;(add-hook 'typescript-mode-hook (lambda () (lll local-unset-key (kbd "{"))))
      (add-hook 'typescript-mode-hook 'paredit-nonlisp)
      (setq typescript-indent-level 2)
      ;; fixes problem with pretty function font-lock
@@ -447,3 +533,4 @@
      ;;                      )))
      ))
 
+(put 'erase-buffer 'disabled nil)
