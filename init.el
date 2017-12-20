@@ -1,4 +1,3 @@
-
 ;;
 ;; package business
 ;;
@@ -35,6 +34,7 @@
     paredit
     company
     feature-mode
+    helm
     web-mode
     all-the-icons
     neotree
@@ -47,11 +47,11 @@
     yasnippet
     el-get
     undo-tree
+    flycheck
     highlight-symbol
     rainbow-delimiters
     fill-column-indicator
     restclient
-    flycheck
     ))
 
 (dolist (p my-packages)
@@ -481,9 +481,6 @@
 ;;(setq flymake-python-pyflakes-executable "flake8")
 (add-hook 'python-mode-hook 'projectile-mode)
 (add-hook 'python-mode-hook 'flycheck-mode)
-
-
-
 
 (add-hook 'java-mode-hook #'yas-minor-mode)
 
