@@ -14,7 +14,9 @@ Started from Alan's [emacs.d](https://github.com/alandipert/alan-emacs.d)
 Install emacs through [Homebrew](http://brew.sh)
 
 ```sh
-$ brew install emacs --with-cocoa --with-imagemagick
+$ brew options emacs
+$ brew install gnutls librsvg imagemagick@6
+$ brew install emacs --with-cocoa --with-imagemagick@6 --with-gnutls --with-librsvg
 ```
 
 Make sure homebrew is setup correctly with `/usr/local/bin` first in your [search path](http://stackoverflow.com/questions/10343834/homebrew-wants-me-to-amend-my-path-no-clue-how).
@@ -24,10 +26,10 @@ To make sure that the correct version is being launched run
 
 ```sh
 $ emacs --version
-GNU Emacs 24.5.1
-Copyright (C) 2015 Free Software Foundation, Inc.
+GNU Emacs 25.3.1
+Copyright (C) 2017 Free Software Foundation, Inc.
 GNU Emacs comes with ABSOLUTELY NO WARRANTY.
-You may redistribute copies of Emacs
+You may redistribute copies of GNU Emacs
 under the terms of the GNU General Public License.
 For more information about these matters, see the file named COPYING.
 ```
