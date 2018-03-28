@@ -18,6 +18,7 @@ $ brew options emacs
 $ brew install gnutls librsvg imagemagick@6
 $ brew install emacs --with-cocoa --with-imagemagick@6 --with-gnutls --with-librsvg
 ```
+**Note**: After setup install icons for [neotree](https://github.com/jaypei/emacs-neotree) `M-x all-the-icons-install-fonts` 
 
 Make sure homebrew is setup correctly with `/usr/local/bin` first in your [search path](http://stackoverflow.com/questions/10343834/homebrew-wants-me-to-amend-my-path-no-clue-how).
 
