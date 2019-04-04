@@ -2,6 +2,9 @@
 ;; package business
 ;;
 
+;; HowTo - Force recompile all packages after major upgrade
+;; M-: (byte-recompile-directory package-user-dir nil 'force)
+
 (require 'package)
 
 (dolist (repo '(("marmalade" . "http://marmalade-repo.org/packages/")
@@ -15,43 +18,48 @@
   (package-refresh-contents))
 
 (defvar my-packages
-  '(ac-slime
+  '(
+    ac-slime
+    ag
     align-cljlet
+    all-the-icons
     auto-complete
+    cider
+    ;;clj-refactor
     clojure-mode
     clojurescript-mode
-    monokai-theme
+    company
     cyberpunk-theme
     dired-details
+    el-get
+    ;;emojify
+    ensime
+    feature-mode
+    fill-column-indicator
     find-file-in-project
-    projectile
+    flycheck
+    helm
+    highlight-symbol
+    json-mode
     magit
     markdown-mode
-    cider
-    which-key
-    org
-    ag
-    paredit
-    company
-    feature-mode
-    helm
-    web-mode
-    all-the-icons
-    neotree
-    ensime
-    nyan-mode
     minimap
-    yaml-mode
-    json-mode
+    monokai-theme
+    neotree
     nodejs-repl
-    yasnippet
-    el-get
-    undo-tree
-    flycheck
-    highlight-symbol
+    nyan-mode
+    operate-on-number
+    org
+    paredit
+    projectile
     rainbow-delimiters
-    fill-column-indicator
     restclient
+    smartrep
+    undo-tree
+    web-mode
+    which-key
+    yaml-mode
+    yasnippet
     ))
 
 (dolist (p my-packages)
@@ -59,18 +67,33 @@
     (package-install p)))
 
 ;;yasnippet snippets
-(setq yas-snippet-dirs
-      '("~/.emacs.d/yasnippet-snippets/"))
-
-
-
+(setq yas-snippet-dirs  '("~/.emacs.d/yasnippet-snippets/"))
+(yas-global-mode 1)
 ;;git gutter experimental
-(global-git-gutter+-mode)
+;;(global-git-gutter+-mode)
+;;(add-hook 'after-init-hook #'global-emojify-mode)
 
+(when (string= system-type "darwin")
+  (setq dired-use-ls-dired nil))
+
+;; broken 26.1
+;;(require 'clj-refactor)
+
+;; (defun my-clojure-mode-hook ()
+;;     (clj-refactor-mode 1)
+;;     (yas-minor-mode 1) ; for adding require/use/import statements
+;;     ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+;;     (cljr-add-keybindings-with-prefix "C-c C-m"))
+
+;; (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
 
 ;; NOTE: install fonts `M-x all-the-icons-install-fonts`
 (require 'all-the-icons)
+
 (require 'neotree)
+(setq neo-banner-message "== neotree ==")
+(setq neo-smart-open t)
+(setq neo-window-width 34)
 
 (require 'doc-view)
 (print doc-view-pdfdraw-program)
@@ -91,7 +114,7 @@
 
 (defvar fci-whitespace-modes
   '(markdown
-    emacs-lisp
+    ;;emacs-lisp
     python
     org))
 
@@ -116,7 +139,7 @@
     ;;(perl . t)
     (python . t)
     ;;(R . t)
-    (sh . t))))
+    (shell . t))))
 
 ;;
 ;; visual settings
@@ -125,16 +148,18 @@
 (setq inhibit-splash-screen t
       initial-scratch-message nil
       truncate-partial-width-windows nil
-      initial-major-mode 'org-mode
+      initial-major-mode 'clojure-mode
       linum-format "%d  "
       visual-bell t)
 
 (line-number-mode 1)
 (column-number-mode 1)
 (global-linum-mode 1)
-;;(global-rainbow-delimiters-mode 1)
+(setq display-line-numbers 'relative)
+
 (winner-mode 1)
 (nyan-mode 1)
+;;(global-rainbow-delimiters-mode 1)
 
 
 (setq mode-line
@@ -149,6 +174,8 @@
 ;;
 
 (add-hook 'before-save-hook 'whitespace-cleanup)
+
+(setq ring-bell-function 'ignore)
 
 ;;(define-globalized-minor-mode global-whitespace-mode whitespace-mode (lambda () (whitespace-mode 1)))
 ;;(global-whitespace-mode 1)
@@ -170,7 +197,7 @@
               indent-tabs-mode nil
               c-basic-offset 2
               sh-basic-offset 2
-              js-indent-level 2
+              ;;js-indent-level 2
               whitespace-line-column 120
               fill-column 120)
 
@@ -217,6 +244,26 @@
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "C-x p f") 'find-file-in-project)
+
+;; kill lines backward
+(global-set-key (kbd "C-<backspace>") (lambda ()
+                                        (interactive)
+                                        (kill-line 0)
+                                        (indent-according-to-mode)))
+
+
+
+(defun snowman () (interactive) (insert "☃" ))
+(defun shrug () (interactive) (insert "¯\\_(ツ)_/¯" ))
+(defun rage () (interactive (insert "(╯°□°）╯︵ ┻━┻")))
+(defun todo () (interactive) (insert "TODO" ) )
+(defun λ () (interactive) (insert "λ"))
+
+(global-set-key (kbd "C-c 8 s") 'snowman)
+(global-set-key (kbd "C-c 8 i d k") 'shrug)
+(global-set-key (kbd "C-c 8 r a g e") 'rage)
+(global-set-key (kbd "C-c 8 t") 'todo)
+(global-set-key (kbd "C-c 8 l") 'λ)
 
 
 ;;; :set wrapscan emulation
@@ -296,6 +343,7 @@
 ;; lisp jockeying
 ;;
 
+(setq cider-default-cljs-repl 'figwheel)
 (add-to-list 'auto-mode-alist '("\\.cljs.hl\\'" . clojurescript-mode))
 
 
@@ -319,7 +367,6 @@
 
 (setq company-tooltip-align-annotations t)
 (require 'web-mode)
-
 
 ;;
 ;; change font size
@@ -399,6 +446,23 @@
 ;; package-specific customizations
 ;;
 
+;;; operate-on-number
+(require 'operate-on-number)
+(require 'smartrep)
+
+(smartrep-define-key global-map "C-c ."
+  '(("+" . apply-operation-to-number-at-point)
+    ("-" . apply-operation-to-number-at-point)
+    ("*" . apply-operation-to-number-at-point)
+    ("/" . apply-operation-to-number-at-point)
+    ("\\" . apply-operation-to-number-at-point)
+    ("^" . apply-operation-to-number-at-point)
+    ("<" . apply-operation-to-number-at-point)
+    (">" . apply-operation-to-number-at-point)
+    ("#" . apply-operation-to-number-at-point)
+    ("%" . apply-operation-to-number-at-point)
+    ("'" . operate-on-number-at-point)))
+
 ;;; find-file-in-project
 
 (setq ffip-patterns '("*")
@@ -469,18 +533,26 @@
 
 ;;react-native
 (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
-(setq web-mode-markup-indent-offset 2
-      web-mode-css-indent-offset 2
-      web-mode-code-indent-offset 2)
-(setq js-indent-level 2)
+;; (setq web-mode-markup-indent-offset 2
+;;       web-mode-css-indent-offset 2
+;;       web-mode-code-indent-offset 2)
+;; (setq js-indent-level 2)
+
+;; projectile global
+
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
 ;; python
 ;; flake8
 ;; flymake-python-pyflakes
 ;;(add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
 ;;(setq flymake-python-pyflakes-executable "flake8")
-(add-hook 'python-mode-hook 'projectile-mode)
-(add-hook 'python-mode-hook 'flycheck-mode)
+;;(add-hook 'python-mode-hook 'projectile-mode)
+;;(add-hook 'python-mode-hook 'flycheck-mode)
+
+
 
 (add-hook 'java-mode-hook #'yas-minor-mode)
 
@@ -489,7 +561,7 @@
   '(progn (define-key js-mode-map "{" 'paredit-open-curly)
           (define-key js-mode-map "}" 'paredit-close-curly-and-newline)
           (add-hook 'js-mode-hook 'paredit-nonlisp)
-          (setq js-indent-level 2)
+          ;;(setq js-indent-level 2)
           ;; fixes problem with pretty function font-lock
           (define-key js-mode-map (kbd ",") 'self-insert-command)
           (font-lock-add-keywords
@@ -508,7 +580,7 @@
      (define-key typescript-mode-map "}" 'paredit-close-curly-and-newline)
      ;;(add-hook 'typescript-mode-hook (lambda () (lll local-unset-key (kbd "{"))))
      (add-hook 'typescript-mode-hook 'paredit-nonlisp)
-     (setq typescript-indent-level 2)
+     ;;(setq typescript-indent-level 2)
      ;; fixes problem with pretty function font-lock
      (define-key typescript-mode-map (kbd ",") 'self-insert-command)
      (font-lock-add-keywords
@@ -531,3 +603,6 @@
      ))
 
 (put 'erase-buffer 'disabled nil)
+
+
+(put 'dired-find-alternate-file 'disabled nil)
