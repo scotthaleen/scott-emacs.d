@@ -4,11 +4,15 @@
 
 ;; HowTo - Force recompile all packages after major upgrade
 ;; M-: (byte-recompile-directory package-user-dir nil 'force)
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+(setq package-set-signature nil)
 
 (require 'package)
 
-(dolist (repo '(("marmalade" . "http://marmalade-repo.org/packages/")
+(dolist (repo '(("gnu" . "https://elpa.gnu.org/packages/")
+		;;("marmalade" . "https://marmalade-repo.org/packages/")
                 ("melpa" . "https://melpa.org/packages/")
+		;;("melpa" . "https://stable.melpa.org/packages/")
                 ;;("melpa" . "http://melpa.milkbox.net/packages/")
                 ))
   (add-to-list 'package-archives repo))
@@ -18,22 +22,21 @@
   (package-refresh-contents))
 
 (defvar my-packages
-  '(
-    ac-slime
+  '(ac-slime
     ag
-    align-cljlet
+    ;;align-cljlet
     all-the-icons
     auto-complete
-    cider
+    ;;cider
     ;;clj-refactor
-    clojure-mode
-    clojurescript-mode
+    ;;clojure-mode
+    ;;clojurescript-mode
     company
     cyberpunk-theme
-    dired-details
+    ;;dired-details
     el-get
     ;;emojify
-    ensime
+    ;;ensime
     feature-mode
     fill-column-indicator
     find-file-in-project
@@ -46,8 +49,8 @@
     minimap
     monokai-theme
     neotree
-    nodejs-repl
-    nyan-mode
+    ;;nodejs-repl
+    ;;nyan-mode
     operate-on-number
     org
     paredit
@@ -76,16 +79,6 @@
 (when (string= system-type "darwin")
   (setq dired-use-ls-dired nil))
 
-;; broken 26.1
-;;(require 'clj-refactor)
-
-;; (defun my-clojure-mode-hook ()
-;;     (clj-refactor-mode 1)
-;;     (yas-minor-mode 1) ; for adding require/use/import statements
-;;     ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-;;     (cljr-add-keybindings-with-prefix "C-c C-m"))
-
-;; (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
 
 ;; NOTE: install fonts `M-x all-the-icons-install-fonts`
 (require 'all-the-icons)
@@ -148,7 +141,7 @@
 (setq inhibit-splash-screen t
       initial-scratch-message nil
       truncate-partial-width-windows nil
-      initial-major-mode 'clojure-mode
+      ;;initial-major-mode 'clojure-mode
       linum-format "%d  "
       visual-bell t)
 
@@ -158,7 +151,6 @@
 (setq display-line-numbers 'relative)
 
 (winner-mode 1)
-(nyan-mode 1)
 ;;(global-rainbow-delimiters-mode 1)
 
 
@@ -343,9 +335,6 @@
 ;; lisp jockeying
 ;;
 
-(setq cider-default-cljs-repl 'figwheel)
-(add-to-list 'auto-mode-alist '("\\.cljs.hl\\'" . clojurescript-mode))
-
 
 (setq html5-elements
       '(a abbr acronym address applet area article aside audio b base basefont
@@ -359,11 +348,6 @@
         s p samp script section select small source span strike strong style sub
         summary sup table tbody td textarea tfoot th thead html-time
         title tr track tt u ul html-var video wbr))
-
-(add-hook 'clojurescript-mode-hook
-          '(lambda ()
-             (dolist (el html5-elements)
-               (put-clojure-indent el 'defun))))
 
 (setq company-tooltip-align-annotations t)
 (require 'web-mode)
@@ -408,41 +392,6 @@
 (put 'set-goal-column 'disabled nil)
 
 ;;
-;; mvnrepl
-;;
-
-(defgroup mvnrepl nil
-  "run mvn clojure:repl from emacs"
-  :prefix "mvnrepl-"
-  :group 'applications)
-
-(defcustom mvnrepl-mvn "mvn"
-  "Maven 'mvn' command."
-  :type 'string
-  :group 'mvnrepl)
-
-(defun mvnrepl-project-root ()
-  "Look for pom.xml file to find project root."
-  (let ((cwd default-directory)
-        (found nil)
-        (max 10))
-    (while (and (not found) (> max 0))
-      (if (file-exists-p (concat cwd "pom.xml"))
-          (setq found cwd)
-        (setq cwd (concat cwd "../") max (- max 1))))
-    (and found (expand-file-name found))))
-
-(defun mvnrepl ()
-  "From a buffer with a file in the project open, run M-x mvn-repl to get a project inferior-lisp"
-  (interactive)
-  (let ((project-root (mvnrepl-project-root)))
-    (if project-root
-        (inferior-lisp (concat mvnrepl-mvn " -f " project-root "/pom.xml clojure:repl"))
-      (message (concat "Maven project not found.")))))
-
-(provide 'mvnrepl)
-
-;;
 ;; package-specific customizations
 ;;
 
@@ -484,8 +433,7 @@
 ;; paredit
 
 (defvar paredit-modes
-  '(clojure
-    emacs-lisp
+  '(emacs-lisp
     lisp
     lisp-interaction
     ielm
@@ -502,8 +450,7 @@
 
 ;; rainbow-delimiter modes
 (defvar rainbow-delimiter-modes
-  '(clojure
-    emacs-lisp
+  '(emacs-lisp
     lisp
     lisp-interaction
     ielm
@@ -530,13 +477,6 @@
   (set (make-local-variable 'paredit-space-for-delimiter-predicates)
        '((lambda (endp delimiter) nil)))
   (paredit-mode 1))
-
-;;react-native
-(add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
-;; (setq web-mode-markup-indent-offset 2
-;;       web-mode-css-indent-offset 2
-;;       web-mode-code-indent-offset 2)
-;; (setq js-indent-level 2)
 
 ;; projectile global
 
