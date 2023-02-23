@@ -1,13 +1,18 @@
-;;
+;
 ;; package business
 ;;
 
 ;; HowTo - Force recompile all packages after major upgrade
 ;; M-: (byte-recompile-directory package-user-dir nil 'force)
 
+
+;; https://emacs.stackexchange.com/a/63438
+(custom-set-variables
+ '(gnutls-algorithm-priority "normal:-vers-tls1.3"))
+
 (require 'package)
 
-(dolist (repo '(("marmalade" . "http://marmalade-repo.org/packages/")
+(dolist (repo '(;;("marmalade" . "http://marmalade-repo.org/packages/")
                 ("melpa" . "https://melpa.org/packages/")
                 ;;("melpa" . "http://melpa.milkbox.net/packages/")
                 ))
@@ -21,45 +26,57 @@
   '(
     ac-slime
     ag
-    align-cljlet
     all-the-icons
     auto-complete
     cider
-    ;;clj-refactor
     clojure-mode
     clojurescript-mode
     company
     cyberpunk-theme
+    csv-mode
     dired-details
     el-get
-    ;;emojify
-    ensime
+    ;;eterm-color
+    eterm-256color
+    ;; ensime
+    ;;jupyter
+    ;;zmq
+    ein
     feature-mode
     fill-column-indicator
     find-file-in-project
     flycheck
+    go-mode
     helm
+    hcl-mode
     highlight-symbol
+    hide-lines
+    hide-mode-line
     json-mode
+    jq-mode
     magit
     markdown-mode
     minimap
     monokai-theme
     neotree
-    nodejs-repl
-    nyan-mode
     operate-on-number
     org
+    org-tree-slide
+    org-bullets
     paredit
     projectile
+    racket-mode
     rainbow-delimiters
     restclient
     smartrep
     undo-tree
+    use-package
+    visual-fill-column
     web-mode
     which-key
     yaml-mode
     yasnippet
+    w3m
     ))
 
 (dolist (p my-packages)
@@ -76,17 +93,6 @@
 (when (string= system-type "darwin")
   (setq dired-use-ls-dired nil))
 
-;; broken 26.1
-;;(require 'clj-refactor)
-
-;; (defun my-clojure-mode-hook ()
-;;     (clj-refactor-mode 1)
-;;     (yas-minor-mode 1) ; for adding require/use/import statements
-;;     ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-;;     (cljr-add-keybindings-with-prefix "C-c C-m"))
-
-;; (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
-
 ;; NOTE: install fonts `M-x all-the-icons-install-fonts`
 (require 'all-the-icons)
 
@@ -94,6 +100,7 @@
 (setq neo-banner-message "== neotree ==")
 (setq neo-smart-open t)
 (setq neo-window-width 34)
+(setq-default neo-show-hidden-files t)
 
 (require 'doc-view)
 (print doc-view-pdfdraw-program)
@@ -107,20 +114,40 @@
 (require 'which-key)
 (which-key-mode)
 
-;; fill column indicator
+(require 'restclient)
+;;(require 'restclient-jq)
+;; fill column indicator - DEPRECATED see: display-fill-column-indicator-column
 
-(require 'fill-column-indicator)
-(setq fci-rule-column 120)
+;;(require 'fill-column-indicator)
+;;(setq fci-rule-column 120)
 
-(defvar fci-whitespace-modes
-  '(markdown
-    ;;emacs-lisp
-    python
-    org))
+;; (defvar fci-whitespace-modes
+;;   '(markdown
+;;     ;;emacs-lisp
+;;     python
+;;     org
+;;     ))
 
-(dolist (mode fci-whitespace-modes)
-  (add-hook (intern (concat (symbol-name mode) "-mode-hook")) #'fci-mode)
-  (add-hook (intern (concat (symbol-name mode) "-mode-hook")) #'whitespace-mode))
+;; (dolist (mode fci-whitespace-modes)
+;;   ;;(add-hook (intern (concat (symbol-name mode) "-mode-hook")) #'fci-mode)
+;;   ;;(add-hook (intern (concat (symbol-name mode) "-mode-hook")) #'whitespace-mode)
+;;   )
+
+
+(add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
+
+(setq-default display-fill-column-indicator-column 119)
+;;(global-display-fill-column-indicator-mode 1)
+
+;; only use line indicator in these modes
+(defvar show-fill-column-in-modes
+  '(python
+    markdown
+    js))
+
+(dolist (mode show-fill-column-in-modes)
+  (add-hook (intern (concat (symbol-name mode) "-mode-hook")) #'display-fill-column-indicator-mode))
+
 
 
 (with-eval-after-load
@@ -148,17 +175,19 @@
 (setq inhibit-splash-screen t
       initial-scratch-message nil
       truncate-partial-width-windows nil
-      initial-major-mode 'clojure-mode
+      ;;initial-major-mode 'clojure-mode
       linum-format "%d  "
       visual-bell t)
 
 (line-number-mode 1)
 (column-number-mode 1)
-(global-linum-mode 1)
+;;(global-linum-mode 1)
+(when (version<= "26.0.50" emacs-version )
+  (global-display-line-numbers-mode))
 (setq display-line-numbers 'relative)
 
 (winner-mode 1)
-(nyan-mode 1)
+;;(nyan-mode 1)
 ;;(global-rainbow-delimiters-mode 1)
 
 
@@ -187,8 +216,8 @@
       make-backup-files nil
       auto-save-default nil
       diff-switches "-u -w"
-      whitespace-style '(trailing lines space-before-tab
-                                  face indentation space-after-tab lines-tail))
+      whitespace-style '(trailing lines space-before-tab face indentation space-after-tab lines-tail)
+      )
 
 
 ;;(set-face-attribute 'whitespace-line-column nil :background nil :foreground "gray30")
@@ -197,9 +226,10 @@
               indent-tabs-mode nil
               c-basic-offset 2
               sh-basic-offset 2
-              ;;js-indent-level 2
+              js-indent-level 2
               whitespace-line-column 120
-              fill-column 120)
+              fill-column 120
+              )
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (delete-selection-mode t)
@@ -245,7 +275,7 @@
 (global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "C-x p f") 'find-file-in-project)
 
-;; kill lines backward
+;; kill lines backwardx
 (global-set-key (kbd "C-<backspace>") (lambda ()
                                         (interactive)
                                         (kill-line 0)
@@ -255,16 +285,26 @@
 
 (defun snowman () (interactive) (insert "☃" ))
 (defun shrug () (interactive) (insert "¯\\_(ツ)_/¯" ))
+(defun payattention () (interactive (insert "(°L°)☝")))
 (defun rage () (interactive (insert "(╯°□°）╯︵ ┻━┻")))
-(defun todo () (interactive) (insert "TODO" ) )
+(defun rage2 () (interactive (insert "(ノ `⌒´)ノ︵ ┻━┻")))
+(defun rageback () (interactive (insert "┬─┬ノ(ಠ_ಠノ)")))
+(defun rollin () (interactive (insert "(._.) ( |:) (.-.) (;| ) (._.) ( |:) (.-.)")))
+(defun todo () (interactive) (insert "TODO" ))
 (defun λ () (interactive) (insert "λ"))
+
+(defun pyifmain () (interactive) (insert "if __name__ == \"__main__\":"))
 
 (global-set-key (kbd "C-c 8 s") 'snowman)
 (global-set-key (kbd "C-c 8 i d k") 'shrug)
+(global-set-key (kbd "C-c 8 t h i s") 'payattention)
 (global-set-key (kbd "C-c 8 r a g e") 'rage)
+(global-set-key (kbd "C-c 8 r a g C-e") 'rage2)
+(global-set-key (kbd "C-c 8 r o l l i n") 'rollin)
 (global-set-key (kbd "C-c 8 t") 'todo)
 (global-set-key (kbd "C-c 8 l") 'λ)
-
+(global-set-key (kbd "C-c 8 p m") 'pyifmain)
+(global-set-key (kbd "C-c j p b") 'json-pretty-print)
 
 ;;; :set wrapscan emulation
 (defadvice isearch-search (after isearch-no-fail activate)
@@ -293,7 +333,7 @@
       org-todo-keyword-faces
       '(("ONGOING" . "orange")))
 
-;;
+
 ;; linux fullscreen
 ;;
 
@@ -343,10 +383,6 @@
 ;; lisp jockeying
 ;;
 
-(setq cider-default-cljs-repl 'figwheel)
-(add-to-list 'auto-mode-alist '("\\.cljs.hl\\'" . clojurescript-mode))
-
-
 (setq html5-elements
       '(a abbr acronym address applet area article aside audio b base basefont
         bdi bdo big blockquote body br button canvas caption center cite code
@@ -359,11 +395,6 @@
         s p samp script section select small source span strike strong style sub
         summary sup table tbody td textarea tfoot th thead html-time
         title tr track tt u ul html-var video wbr))
-
-(add-hook 'clojurescript-mode-hook
-          '(lambda ()
-             (dolist (el html5-elements)
-               (put-clojure-indent el 'defun))))
 
 (setq company-tooltip-align-annotations t)
 (require 'web-mode)
@@ -406,41 +437,6 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (put 'set-goal-column 'disabled nil)
-
-;;
-;; mvnrepl
-;;
-
-(defgroup mvnrepl nil
-  "run mvn clojure:repl from emacs"
-  :prefix "mvnrepl-"
-  :group 'applications)
-
-(defcustom mvnrepl-mvn "mvn"
-  "Maven 'mvn' command."
-  :type 'string
-  :group 'mvnrepl)
-
-(defun mvnrepl-project-root ()
-  "Look for pom.xml file to find project root."
-  (let ((cwd default-directory)
-        (found nil)
-        (max 10))
-    (while (and (not found) (> max 0))
-      (if (file-exists-p (concat cwd "pom.xml"))
-          (setq found cwd)
-        (setq cwd (concat cwd "../") max (- max 1))))
-    (and found (expand-file-name found))))
-
-(defun mvnrepl ()
-  "From a buffer with a file in the project open, run M-x mvn-repl to get a project inferior-lisp"
-  (interactive)
-  (let ((project-root (mvnrepl-project-root)))
-    (if project-root
-        (inferior-lisp (concat mvnrepl-mvn " -f " project-root "/pom.xml clojure:repl"))
-      (message (concat "Maven project not found.")))))
-
-(provide 'mvnrepl)
 
 ;;
 ;; package-specific customizations
@@ -486,11 +482,12 @@
 (defvar paredit-modes
   '(clojure
     emacs-lisp
+    racket
     lisp
     lisp-interaction
-    ielm
-    js
-    typescript
+    ;;ielm
+    ;;js
+    ;;typescript
     repl))
 
 (dolist (mode paredit-modes)
@@ -531,78 +528,30 @@
        '((lambda (endp delimiter) nil)))
   (paredit-mode 1))
 
-;;react-native
-(add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
-;; (setq web-mode-markup-indent-offset 2
-;;       web-mode-css-indent-offset 2
-;;       web-mode-code-indent-offset 2)
-;; (setq js-indent-level 2)
-
 ;; projectile global
 
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
-;; python
+; python
+(setq-default py-split-windows-on-execute-function 'split-window-horizontally)
+(setq py-split-window-on-execute nil)
+
 ;; flake8
 ;; flymake-python-pyflakes
 ;;(add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
 ;;(setq flymake-python-pyflakes-executable "flake8")
-;;(add-hook 'python-mode-hook 'projectile-mode)
-;;(add-hook 'python-mode-hook 'flycheck-mode)
-
-
-
-(add-hook 'java-mode-hook #'yas-minor-mode)
+(add-hook 'python-mode-hook 'projectile-mode)
+(add-hook 'python-mode-hook 'flycheck-mode)
+(add-hook 'python-mode-hook '(lambda ()
+                               (define-key python-mode-map (kbd "C-c C-r") 'py-execute-region)))
 
 ;;;###autoload
-(eval-after-load 'js
-  '(progn (define-key js-mode-map "{" 'paredit-open-curly)
-          (define-key js-mode-map "}" 'paredit-close-curly-and-newline)
-          (add-hook 'js-mode-hook 'paredit-nonlisp)
-          ;;(setq js-indent-level 2)
-          ;; fixes problem with pretty function font-lock
-          (define-key js-mode-map (kbd ",") 'self-insert-command)
-          (font-lock-add-keywords
-           'js-mode `(("\\(function *\\)("
-                       (0 (progn (compose-region (match-beginning 1)
-                                                 (match-end 1)
-                                                 ,(make-char 'greek-iso8859-7 107)
-                                                 ;;"\u0192"
-                                                 )
-                                 nil)))))))
-
-;;; typescript add {} to paredit and λ for pretty functions
-(eval-after-load 'typescript-mode
-  '(progn
-     (define-key typescript-mode-map "{" 'paredit-open-curly)
-     (define-key typescript-mode-map "}" 'paredit-close-curly-and-newline)
-     ;;(add-hook 'typescript-mode-hook (lambda () (lll local-unset-key (kbd "{"))))
-     (add-hook 'typescript-mode-hook 'paredit-nonlisp)
-     ;;(setq typescript-indent-level 2)
-     ;; fixes problem with pretty function font-lock
-     (define-key typescript-mode-map (kbd ",") 'self-insert-command)
-     (font-lock-add-keywords
-      'typescript-mode `(("\\(function *\\)("
-                          (0 (progn (compose-region (match-beginning 1)
-                                                    (match-end 1)
-                                                    ,(make-char 'greek-iso8859-7 107)
-                                                    ;;"\u0192"
-                                                    )
-                                    nil)))))
-     ;; (font-lock-add-keywords
-     ;;  'typescript-mode `(("\\((\\)\\(.*\\)\\()\\) *=>"
-     ;;                      (0 (progn (compose-region (match-beginning 1)
-     ;;                                                (match-end 1)
-     ;;                                                ,(make-char 'greek-iso8859-7 107)
-     ;;                                                ;;"\u0192"
-     ;;                                                )
-     ;;                                nil))
-     ;;                      )))
-     ))
 
 (put 'erase-buffer 'disabled nil)
 
-
 (put 'dired-find-alternate-file 'disabled nil)
+
+
+(setq inferior-lisp-program "clisp")
